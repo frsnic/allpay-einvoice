@@ -160,6 +160,34 @@ class ApiController < ApplicationController
     render "result"
   end
 
+  def invoice_notify
+    data = {
+        TimeStamp: Time.now().to_i,
+        MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
+        InvoiceNo: 'AL00000630',
+        Notify: 'E',
+        InvoiceTag: 'I',
+        Notified: 'A'
+    }
+    data = generate_check_mac_value(data)
+    send_request('Notify/InvoiceNotify', data)
+
+    render "result"
+  end
+
+  def trigger_issue
+    data = {
+        TimeStamp: Time.now().to_i,
+        MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
+        Tsr: SecureRandom.hex(15),
+        PayType: '3'
+    }
+    data = generate_check_mac_value(data)
+    send_request('Invoice/TriggerIssue', data)
+
+    render "result"
+  end
+
   private
 
   def generate_check_mac_value(data)

@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     get 'query_issue_invalid'
     get 'query_allowance'
     get 'query_allowance_invalid'
+    get 'invoice_notify'
+    get 'trigger_issue'
   end
 
   root 'api#issue'
