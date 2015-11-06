@@ -2,7 +2,7 @@ class ApiController < ApplicationController
   PRE_ENCODE_COLUMN = [:CustomerName, :CustomerAddr , :CustomerEmail, :InvoiceRemark, :ItemName, :ItemWord, :InvCreateDate]
   BLACK_LIST_COLUMN = [:ItemName, :ItemWord, :InvoiceRemark, :Reason]
   DEVELOP_ENVIRONMENT = {
-      HOST: 'http://einvoice-stage.allpay.com.tw/Invoice/',
+      HOST: 'http://einvoice-stage.allpay.com.tw/',
       HashKey: 'ejCk326UnaZWKisg',
       HashIV: 'q9jcZX8Ib9LM8wYk',
       MerchantID: '2000132'
@@ -30,7 +30,7 @@ class ApiController < ApplicationController
         InvCreateDate: Time.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     data = generate_check_mac_value(data)
-    send_request('Issue', data)
+    send_request('Invoice/Issue', data)
 
     render "result.html.erb"
   end
@@ -58,7 +58,7 @@ class ApiController < ApplicationController
         InvType: '07'
     }
     data = generate_check_mac_value(data)
-    send_request('DelayIssue', data)
+    send_request('Invoice/DelayIssue', data)
 
     render "result"
   end
@@ -67,18 +67,18 @@ class ApiController < ApplicationController
     data = {
         TimeStamp: Time.now().to_i,
         MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
-        InvoiceNo: 'AL00000615',
+        InvoiceNo: 'AL00000630',
         AllowanceNotify: 'E',
-        NotifyMail: 'abc@allpay.com.tw',
+        NotifyMail: 'frsnic@gmail.com',
         AllowanceAmount: 50,
         ItemName: '名稱 1|名稱 2|名稱 3',
         ItemCount: '1|2|3',
         ItemWord: '單位 1|單位 2|單位 3',
-        ItemPrice: '44|55|65',
+        ItemPrice: '44|55|66',
         ItemAmount: '100|100|100'
     }
     data = generate_check_mac_value(data)
-    send_request('Allowance', data)
+    send_request('Invoice/Allowance', data)
 
     render "result"
   end
@@ -87,11 +87,11 @@ class ApiController < ApplicationController
     data = {
         TimeStamp: Time.now().to_i,
         MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
-        InvoiceNumber: 'AL00000614',
+        InvoiceNumber: 'AL00000630',
         Reason: 'I hate test.'
     }
     data = generate_check_mac_value(data)
-    send_request('IssueInvalid', data)
+    send_request('Invoice/IssueInvalid', data)
 
     render "result"
   end
@@ -105,7 +105,57 @@ class ApiController < ApplicationController
         Reason: 'I hate test.'
     }
     data = generate_check_mac_value(data)
-    send_request('IssueInvalid', data)
+    send_request('Invoice/AllowanceInvalid', data)
+
+    render "result"
+  end
+
+  def query_issue
+    data = {
+        TimeStamp: Time.now().to_i,
+        MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
+        RelateNumber: "7ec03eb8d7c1f8c57f5dca65545a24"
+    }
+    data = generate_check_mac_value(data)
+    send_request('Query/Issue', data)
+
+    render "result"
+  end
+
+  def query_issue_invalid
+    data = {
+        TimeStamp: Time.now().to_i,
+        MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
+        RelateNumber: "7ec03eb8d7c1f8c57f5dca65545a24"
+    }
+    data = generate_check_mac_value(data)
+    send_request('Query/IssueInvalid', data)
+
+    render "result"
+  end
+
+  def query_allowance
+    data = {
+        TimeStamp: Time.now().to_i,
+        MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
+        InvoiceNo: 'AL00000630',
+        AllowanceNo: 'Allpay0123456789'
+    }
+    data = generate_check_mac_value(data)
+    send_request('Query/Allowance', data)
+
+    render "result"
+  end
+
+  def query_allowance_invalid
+    data = {
+        TimeStamp: Time.now().to_i,
+        MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
+        InvoiceNo: 'AL00000630',
+        AllowanceNo: 'Allpay0123456789'
+    }
+    data = generate_check_mac_value(data)
+    send_request('Query/AllowanceInvalid', data)
 
     render "result"
   end

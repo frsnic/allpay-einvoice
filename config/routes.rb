@@ -7,6 +7,10 @@ Rails.application.routes.draw do
     get 'allowance'
     get 'issue_invalid'
     get 'allowance_invalid'
+    get 'query_issue'
+    get 'query_issue_invalid'
+    get 'query_allowance'
+    get 'query_allowance_invalid'
   end
 
   root 'api#issue'
