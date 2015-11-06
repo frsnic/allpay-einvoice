@@ -2,9 +2,9 @@ Rails.application.routes.draw do
 
   get 'api/index'
 
-  get 'api/send_request'
+  get 'api/issue'
 
-  root 'api#send_request'
+  root 'api#issue'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

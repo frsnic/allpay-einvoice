@@ -11,11 +11,11 @@ class ApiController < ApplicationController
   def index
   end
 
-  def send_request
+  def issue
     data = {
         TimeStamp: Time.now().to_i,
         MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
-        RelateNumber: SecureRandom.hex(10),
+        RelateNumber: SecureRandom.hex(15),
         CustomerEmail: 'abc@allpay.com.tw',
         Print: '0',
         Donation: '2',
