@@ -2,7 +2,7 @@ class ApiController < ApplicationController
   PRE_ENCODE_COLUMN = [:CustomerName, :CustomerAddr , :CustomerEmail, :InvoiceRemark, :ItemName, :ItemWord, :InvCreateDate]
   BLACK_LIST_COLUMN = [:ItemName, :ItemWord, :InvoiceRemark]
   DEVELOP_ENVIRONMENT = {
-      HOST: 'http://einvoice-stage.allpay.com.tw/Invoice/Issue',
+      HOST: 'http://einvoice-stage.allpay.com.tw/Invoice/',
       HashKey: 'ejCk326UnaZWKisg',
       HashIV: 'q9jcZX8Ib9LM8wYk',
       MerchantID: '2000132'
@@ -31,8 +31,10 @@ class ApiController < ApplicationController
     }
     data = generate_check_mac_value(data)
 
-    uri = URI(DEVELOP_ENVIRONMENT[:HOST])
+    uri = URI(DEVELOP_ENVIRONMENT[:HOST] << 'Issue')
     result = Net::HTTP.post_form(uri, data)
+    logger.info "== #{result} =="
+    logger.info "== #{result.body} =="
 
     obj = {}
     result.body.split('&').each do |item|
@@ -43,6 +45,50 @@ class ApiController < ApplicationController
     @data = data
     @result = obj
     @error_msg = error_msg(obj["RtnCode"])
+
+    render "result.html.erb"
+  end
+
+  def delay_issue
+    data = {
+        TimeStamp: Time.now().to_i,
+        DelayFlag: 1,
+        MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
+        RelateNumber: SecureRandom.hex(15),
+        CustomerEmail: 'abc@allpay.com.tw',
+        TaxType: '1',
+        Donation: '2',
+        Print: '0',
+        SalesAmount: 300,
+        ItemName: '名稱 1|名稱 2|名稱 3',
+        ItemCount: '1|2|3',
+        ItemWord: '單位 1|單位 2|單位 3',
+        ItemPrice: '44|55|66',
+        ItemAmount: '100|100|100',
+        DelayDay: '7',
+        Tsr: SecureRandom.hex(15),
+        PayType: '3',
+        PayAct: 'ALLPAY',
+        InvType: '07'
+    }
+    data = generate_check_mac_value(data)
+
+    uri = URI(DEVELOP_ENVIRONMENT[:HOST] << 'DelayIssue')
+    result = Net::HTTP.post_form(uri, data)
+    logger.info "== #{result} =="
+    logger.info "== #{result.body} =="
+
+    obj = {}
+    result.body.split('&').each do |item|
+      key, value = item.split('=')
+      obj[key] = value
+    end
+
+    @data = data
+    @result = obj
+    @error_msg = error_msg(obj["RtnCode"])
+
+    render "result"
   end
 
   private

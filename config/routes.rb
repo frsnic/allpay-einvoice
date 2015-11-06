@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
 
-  get 'api/index'
-
-  get 'api/issue'
+  scope :controller => "api" do
+    get 'index'
+    get 'issue'
+    get 'delay_issue'
+  end
 
   root 'api#issue'
 
