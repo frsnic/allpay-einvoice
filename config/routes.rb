@@ -4,6 +4,9 @@ Rails.application.routes.draw do
     get 'index'
     get 'issue'
     get 'delay_issue'
+    get 'allowance'
+    get 'issue_invalid'
+    get 'allowance_invalid'
   end
 
   root 'api#issue'

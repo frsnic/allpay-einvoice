@@ -1,6 +1,6 @@
 class ApiController < ApplicationController
   PRE_ENCODE_COLUMN = [:CustomerName, :CustomerAddr , :CustomerEmail, :InvoiceRemark, :ItemName, :ItemWord, :InvCreateDate]
-  BLACK_LIST_COLUMN = [:ItemName, :ItemWord, :InvoiceRemark]
+  BLACK_LIST_COLUMN = [:ItemName, :ItemWord, :InvoiceRemark, :Reason]
   DEVELOP_ENVIRONMENT = {
       HOST: 'http://einvoice-stage.allpay.com.tw/Invoice/',
       HashKey: 'ejCk326UnaZWKisg',
@@ -30,21 +30,7 @@ class ApiController < ApplicationController
         InvCreateDate: Time.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     data = generate_check_mac_value(data)
-
-    uri = URI(DEVELOP_ENVIRONMENT[:HOST] << 'Issue')
-    result = Net::HTTP.post_form(uri, data)
-    logger.info "== #{result} =="
-    logger.info "== #{result.body} =="
-
-    obj = {}
-    result.body.split('&').each do |item|
-      key, value = item.split('=')
-      obj[key] = value
-    end
-
-    @data = data
-    @result = obj
-    @error_msg = error_msg(obj["RtnCode"])
+    send_request('Issue', data)
 
     render "result.html.erb"
   end
@@ -72,21 +58,54 @@ class ApiController < ApplicationController
         InvType: '07'
     }
     data = generate_check_mac_value(data)
+    send_request('DelayIssue', data)
 
-    uri = URI(DEVELOP_ENVIRONMENT[:HOST] << 'DelayIssue')
-    result = Net::HTTP.post_form(uri, data)
-    logger.info "== #{result} =="
-    logger.info "== #{result.body} =="
+    render "result"
+  end
 
-    obj = {}
-    result.body.split('&').each do |item|
-      key, value = item.split('=')
-      obj[key] = value
-    end
+  def allowance
+    data = {
+        TimeStamp: Time.now().to_i,
+        MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
+        InvoiceNo: 'AL00000615',
+        AllowanceNotify: 'E',
+        NotifyMail: 'abc@allpay.com.tw',
+        AllowanceAmount: 50,
+        ItemName: '名稱 1|名稱 2|名稱 3',
+        ItemCount: '1|2|3',
+        ItemWord: '單位 1|單位 2|單位 3',
+        ItemPrice: '44|55|65',
+        ItemAmount: '100|100|100'
+    }
+    data = generate_check_mac_value(data)
+    send_request('Allowance', data)
 
-    @data = data
-    @result = obj
-    @error_msg = error_msg(obj["RtnCode"])
+    render "result"
+  end
+
+  def issue_invalid
+    data = {
+        TimeStamp: Time.now().to_i,
+        MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
+        InvoiceNumber: 'AL00000614',
+        Reason: 'I hate test.'
+    }
+    data = generate_check_mac_value(data)
+    send_request('IssueInvalid', data)
+
+    render "result"
+  end
+
+  def allowance_invalid
+    data = {
+        TimeStamp: Time.now().to_i,
+        MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
+        InvoiceNo: 'AL00000614',
+        AllowanceNo: 'Allpay0123456789',
+        Reason: 'I hate test.'
+    }
+    data = generate_check_mac_value(data)
+    send_request('IssueInvalid', data)
 
     render "result"
   end
@@ -102,6 +121,23 @@ class ApiController < ApplicationController
     str = "HashKey=#{DEVELOP_ENVIRONMENT[:HashKey]}&#{str}HashIV=#{DEVELOP_ENVIRONMENT[:HashIV]}"
     data[:CheckMacValue] = Digest::MD5.hexdigest(CGI::escape(str).downcase).upcase
     data
+  end
+
+  def send_request(action_name, data)
+    uri = URI(DEVELOP_ENVIRONMENT[:HOST] << action_name)
+    result = Net::HTTP.post_form(uri, data)
+    logger.info "== #{result} =="
+    logger.info "== #{result.body} =="
+
+    obj = {}
+    result.body.split('&').each do |item|
+      key, value = item.split('=')
+      obj[key] = value
+    end
+
+    @data = data
+    @result = obj
+    @error_msg = error_msg(obj["RtnCode"])
   end
 
   def error_msg(code)
