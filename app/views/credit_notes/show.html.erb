@@ -1,0 +1,18 @@
+<div class="col-md-12">
+  <h2>Credit Note <%= @credit_note.ia_invoice_no %></h2>
+  <ul>
+    <% @credit_note.as_json.keys.each do |key| %>
+      <li><%= key.titleize %>：<%= @credit_note[key] %></li>
+    <% end %>
+  </ul>
+  <br>
+
+  <%= link_to 'Index', root_path, class: "btn btn-primary" %>
+  <% if @credit_note.status == "allowance" %>
+    <%= link_to("Allowance Invalid", allowance_invalid_einvoice_credit_note_path(@einvoice.id, @credit_note.id), class: "btn btn-danger", method: :get, data: { confirm: "Are you sure?" } ) %>
+    <%= link_to("Query Allowance", query_allowance_einvoice_credit_note_path(@einvoice.id, @credit_note.id), class: "btn btn-success" ) %>
+  <% end %>
+  <% if @credit_note.status == "allowance_invalid" %>
+    <%= link_to("Query Allowance Invalid", query_allowance_invalid_einvoice_credit_note_path(@einvoice.id, @credit_note.id), class: "btn btn-success" ) %>
+  <% end %>
+</div>

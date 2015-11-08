@@ -1,0 +1,31 @@
+<div class="col-md-12">
+  <h1>Allowance List</h1>
+  <table class="table table-hover">
+    <thead>
+    <tr>
+      <td>#</td>
+      <td>IA_Allow_No</td>
+      <td>IA_Invoice_No</td>
+      <td>Status</td>
+    </tr>
+    </thead>
+    <tbody>
+      <% @credit_notes.each_with_index do |credit_note, index| %>
+        <tr>
+          <td><%= credit_note.id %></td>
+          <td><%= credit_note.ia_allow_no %></td>
+          <td><%= credit_note.ia_invoice_no %></td>
+          <td><%= credit_note.status %></td>
+          <td>
+            <%= link_to("Show", einvoice_credit_note_path(@einvoice, credit_note.id), class: "btn btn-sm btn-primary") %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= link_to 'Index', root_path, class: "btn btn-primary" %>
+  <% if @einvoice.status != 'issue_invalid' %>
+    <%= link_to("Allowance", edit_einvoice_path(@einvoice.id), class: "btn btn-warning" ) %>
+  <% end %>
+</div>

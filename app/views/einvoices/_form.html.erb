@@ -1,0 +1,14 @@
+<%= simple_form_for @einvoice, url: url, method: "post" do |f| %>
+  <div class="form-einvoice">
+    <%= f.input :customer_name,  input_html: { class: "form-control" } %>
+    <%= f.input :customer_phone, input_html: { class: "form-control" } %>
+    <%= f.input :customer_email, input_html: { class: "form-control", value: "frsnic@gmail.com" } %>
+    <%= f.input :item_name,      input_html: { class: "form-control", value: "名稱 1|名稱 2|名稱 3" } %>
+    <%= f.input :item_count,     input_html: { class: "form-control", value: "1|2|3" } %>
+    <%= f.input :item_word,      input_html: { class: "form-control", value: "單位 1|單位 2|單位 3" } %>
+    <%= f.input :item_price,     input_html: { class: "form-control", value: "44|55|66" } %>
+  </div>
+  <br>
+  <%= f.submit "Submit", class: "btn btn-primary" %>
+  <%= link_to 'Index', root_path, class: "btn btn-success" %>
+<% end %>

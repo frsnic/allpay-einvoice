@@ -1,0 +1,15 @@
+<div class="col-md-6 col-md-offset-3">
+  <h1><%= "Notify Issue #{@einvoice.invoice_number}" %></h1>
+  <%= simple_form_for :form, url: invoice_notify_einvoice_path, method: "post" do |f| %>
+    <div class="form-einvoice">
+      <%= f.input :allowance_no, input_html: { class: "form-control" }, collection: @einvoice.credit_notes.pluck(:ia_allow_no) %>
+      <%= f.input :phone,        input_html: { class: "form-control" } %>
+      <%= f.input :notify_mail,  input_html: { class: "form-control", value: "frsnic@gmail.com" } %>
+      <%= f.input :invoice_tag,  input_html: { class: "form-control" }, collection: [['發票開立', 'I'] ,['發票作廢', 'II'], ['折讓開立', 'A'], ['折讓作廢', 'AI'], ['發票中獎', 'AW']] %>
+      <%= f.input :notified,     input_html: { class: "form-control" }, collection: [['通知客戶', 'C'], ['通知廠商', 'M'], ['皆發送', 'M']] %>
+    </div>
+    <br>
+    <%= f.submit "Submit", class: "btn btn-primary" %>
+    <%= link_to 'Index', root_path, class: "btn btn-success" %>
+  <% end %>
+</div>

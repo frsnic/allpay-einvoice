@@ -1,5 +1,30 @@
 Rails.application.routes.draw do
 
+  resources :einvoices do
+    collection do
+      post :issue
+    end
+
+    member do
+      post 'allowance'
+      get 'delay_issue'
+      get 'issue_invalid'
+      get 'query_issue'
+      get 'query_issue_invalid'
+      get 'notify'
+      post 'invoice_notify'
+      get 'trigger_issue'
+    end
+
+    resources :credit_notes do
+      member do
+        get 'allowance_invalid'
+        get 'query_allowance'
+        get 'query_allowance_invalid'
+      end
+    end
+  end
+
   scope :controller => "api" do
     get 'index'
     get 'issue'
@@ -15,7 +40,7 @@ Rails.application.routes.draw do
     get 'trigger_issue'
   end
 
-  root 'api#issue'
+  root 'einvoices#index'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

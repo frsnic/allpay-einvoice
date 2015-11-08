@@ -1,0 +1,2 @@
+module EinvoicesHelper
+end

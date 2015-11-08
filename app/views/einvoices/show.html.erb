@@ -1,0 +1,26 @@
+<div class="col-md-12">
+  <h2><%= @einvoice.invoice_number %></h2>
+  <ul>
+    <% @einvoice.as_json.keys.each do |key| %>
+      <li><%= key.titleize %>：<%= @einvoice[key] %></li>
+    <% end %>
+  </ul>
+  <br>
+
+  <%= link_to 'Index', root_path, class: "btn btn-primary" %>
+  <%= link_to 'Notify', notify_einvoice_path(@einvoice.id), class: "btn btn-success" %>
+  <% if @einvoice.status == 'issue' %>
+    <%= link_to("Invalid", issue_invalid_einvoice_path(@einvoice.id), class: "btn btn-danger", method: :get, data: { confirm: "Are you sure?" } ) %>
+    <%= link_to("Query", query_issue_einvoice_path(@einvoice.id), class: "btn btn-success" ) %>
+  <% end %>
+  <% if @einvoice.status == 'issue_invalid' %>
+    <%= link_to("Query Invalid", query_issue_invalid_einvoice_path(@einvoice.id), class: "btn btn-success" ) %>
+  <% end %>
+  <% if @einvoice.status != 'issue_invalid' %>
+    <%= link_to("Allowance", edit_einvoice_path(@einvoice.id), class: "btn btn-warning" ) %>
+  <% end %>
+  <% if @einvoice.status == 'allowance' %>
+    <%= link_to("Allowance Invalid", einvoice_credit_notes_path(@einvoice.id), class: "btn btn-danger" ) %>
+    <%= link_to("Query", query_issue_einvoice_path(@einvoice.id), class: "btn btn-success" ) %>
+  <% end %>
+</div>

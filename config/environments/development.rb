@@ -38,4 +38,14 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  PRE_ENCODE_COLUMN = [:CustomerName, :CustomerAddr , :CustomerEmail, :InvoiceRemark, :ItemName, :ItemWord, :InvCreateDate, :NotifyMail]
+  BLACK_LIST_COLUMN = [:ItemName, :ItemWord, :InvoiceRemark, :Reason]
+  DEVELOP_ENVIRONMENT = {
+      HOST: 'http://einvoice-stage.allpay.com.tw/',
+      HashKey: 'ejCk326UnaZWKisg',
+      HashIV: 'q9jcZX8Ib9LM8wYk',
+      MerchantID: '2000132'
+  }
+
 end

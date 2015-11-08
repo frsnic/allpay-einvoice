@@ -1,0 +1,28 @@
+<div class="col-md-12">
+  <h1>Issue List</h1>
+  <table class="table table-hover">
+    <thead>
+    <tr>
+      <td>#</td>
+      <td>InvoiceNumber</td>
+      <td>RelateNumber</td>
+      <td>Status</td>
+    </tr>
+    </thead>
+    <tbody>
+      <% @einvoices.each_with_index do |einvoice, index| %>
+        <tr>
+          <td><%= einvoice.id %></td>
+          <td><%= einvoice.invoice_number %></td>
+          <td><%= einvoice.relate_number %></td>
+          <td><%= einvoice.status %></td>
+          <td>
+            <%= link_to("Show", einvoice_path(einvoice.id), class: "btn btn-sm btn-primary") %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= link_to 'New Issue', new_einvoice_path, class: "btn btn-primary" %>
+</div>
