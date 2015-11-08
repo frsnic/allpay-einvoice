@@ -1,5 +1,6 @@
+# encoding: utf-8
 class ApiController < ApplicationController
-  PRE_ENCODE_COLUMN = [:CustomerName, :CustomerAddr , :CustomerEmail, :InvoiceRemark, :ItemName, :ItemWord, :InvCreateDate]
+  PRE_ENCODE_COLUMN = [:CustomerName, :CustomerAddr , :CustomerEmail, :InvoiceRemark, :ItemName, :ItemWord, :InvCreateDate, :NotifyMail]
   BLACK_LIST_COLUMN = [:ItemName, :ItemWord, :InvoiceRemark, :Reason]
   DEVELOP_ENVIRONMENT = {
       HOST: 'http://einvoice-stage.allpay.com.tw/',
@@ -16,7 +17,7 @@ class ApiController < ApplicationController
         TimeStamp: Time.now().to_i,
         MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
         RelateNumber: SecureRandom.hex(15),
-        CustomerEmail: 'abc@allpay.com.tw',
+        CustomerEmail: 'frsnic@gmail.com',
         Print: '0',
         Donation: '2',
         TaxType: '1',
@@ -38,10 +39,10 @@ class ApiController < ApplicationController
   def delay_issue
     data = {
         TimeStamp: Time.now().to_i,
-        DelayFlag: 1,
+        DelayFlag: 2,
         MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
-        RelateNumber: SecureRandom.hex(15),
-        CustomerEmail: 'abc@allpay.com.tw',
+        RelateNumber: "fb8532344305c47c5302d5e0ec2d52",
+        CustomerEmail: 'frsnic@gmail.com',
         TaxType: '1',
         Donation: '2',
         Print: '0',
@@ -51,7 +52,7 @@ class ApiController < ApplicationController
         ItemWord: '單位 1|單位 2|單位 3',
         ItemPrice: '44|55|66',
         ItemAmount: '100|100|100',
-        DelayDay: '7',
+        DelayDay: '0',
         Tsr: SecureRandom.hex(15),
         PayType: '3',
         PayAct: 'ALLPAY',
@@ -67,15 +68,15 @@ class ApiController < ApplicationController
     data = {
         TimeStamp: Time.now().to_i,
         MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
-        InvoiceNo: 'AL00000630',
+        InvoiceNo: 'AL00000663',
         AllowanceNotify: 'E',
         NotifyMail: 'frsnic@gmail.com',
-        AllowanceAmount: 50,
-        ItemName: '名稱 1|名稱 2|名稱 3',
-        ItemCount: '1|2|3',
-        ItemWord: '單位 1|單位 2|單位 3',
-        ItemPrice: '44|55|66',
-        ItemAmount: '100|100|100'
+        AllowanceAmount: '5',
+        ItemName: '名稱',
+        ItemCount: '1',
+        ItemWord: '單位 1',
+        ItemPrice: '5',
+        ItemAmount: '5'
     }
     data = generate_check_mac_value(data)
     send_request('Invoice/Allowance', data)
@@ -87,7 +88,7 @@ class ApiController < ApplicationController
     data = {
         TimeStamp: Time.now().to_i,
         MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
-        InvoiceNumber: 'AL00000630',
+        InvoiceNumber: 'AL00000666',
         Reason: 'I hate test.'
     }
     data = generate_check_mac_value(data)
@@ -100,8 +101,8 @@ class ApiController < ApplicationController
     data = {
         TimeStamp: Time.now().to_i,
         MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
-        InvoiceNo: 'AL00000614',
-        AllowanceNo: 'Allpay0123456789',
+        InvoiceNo: 'AL00000663',
+        AllowanceNo: '2015110618143109',
         Reason: 'I hate test.'
     }
     data = generate_check_mac_value(data)
@@ -114,7 +115,7 @@ class ApiController < ApplicationController
     data = {
         TimeStamp: Time.now().to_i,
         MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
-        RelateNumber: "7ec03eb8d7c1f8c57f5dca65545a24"
+        RelateNumber: "2709af3c2626961724d51bd8b164da"
     }
     data = generate_check_mac_value(data)
     send_request('Query/Issue', data)
@@ -126,7 +127,7 @@ class ApiController < ApplicationController
     data = {
         TimeStamp: Time.now().to_i,
         MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
-        RelateNumber: "7ec03eb8d7c1f8c57f5dca65545a24"
+        RelateNumber: "3e883be14a9a8e2b26cdeb92dc5fe9"
     }
     data = generate_check_mac_value(data)
     send_request('Query/IssueInvalid', data)
@@ -164,7 +165,8 @@ class ApiController < ApplicationController
     data = {
         TimeStamp: Time.now().to_i,
         MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
-        InvoiceNo: 'AL00000630',
+        InvoiceNo: 'AL00000640',
+        NotifyMail: 'frsnic@gmail.com',
         Notify: 'E',
         InvoiceTag: 'I',
         Notified: 'A'
@@ -215,7 +217,7 @@ class ApiController < ApplicationController
 
     @data = data
     @result = obj
-    @error_msg = error_msg(obj["RtnCode"])
+    @error_msg = URI.decode(result.body).to_s.force_encoding("UTF-8") + '\n' + error_msg(obj["RtnCode"]).to_s
   end
 
   def error_msg(code)
