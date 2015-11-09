@@ -20,7 +20,7 @@ class CreditNotesController < ApplicationController
     data = encode_and_check_mac_value(data)
     send_request('Invoice/AllowanceInvalid', data)
 
-    if (@result["RtnCode"] == "1")
+    if (@result[:RtnCode] == "1")
       @credit_note.update!(status: "allowance_invalid")
       if @einvoice.credit_notes.pluck(:status).uniq == ["allowance_invalid"]
         @einvoice.update!(status: "issue")

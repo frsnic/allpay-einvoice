@@ -2,7 +2,8 @@ class EinvoicesController < ApplicationController
   before_action :find_einvoice, except: [:index, :new, :issue, :delay, :delay_issue]
 
 =begin
-  PRE_ENCODE_COLUMN = [:CustomerName, :CustomerAddr , :CustomerEmail, :InvoiceRemark, :ItemName, :ItemWord, :InvCreateDate, :NotifyMail]
+  PRE_ENCODE_COLUMN = [:CustomerName, :CustomerAddr , :CustomerEmail, :InvoiceRemark, :ItemName, :ItemWord, :InvCreateDate, :NotifyMail,
+                       :Reason, :IIS_Customer_Name, :IIS_Customer_Addr, :IIS_Customer_Email]
   BLACK_LIST_COLUMN = [:ItemName, :ItemWord, :InvoiceRemark, :Reason]
   DEVELOP_ENVIRONMENT = {
       HOST: 'http://einvoice-stage.allpay.com.tw/',
@@ -57,7 +58,7 @@ class EinvoicesController < ApplicationController
     encode_data          = encode_and_check_mac_value(data)
     send_request('Invoice/Issue', encode_data)
 
-    if (@result["RtnCode"] == "1")
+    if (@result[:RtnCode] == "1")
       obj = {"invoice_number" => @result["InvoiceNumber"], status: 'issue'}
       data.each { |key, value| obj[key.to_s.underscore] = value }
       Einvoice.create(obj)
@@ -76,7 +77,7 @@ class EinvoicesController < ApplicationController
     data = encode_and_check_mac_value(data)
     send_request('Invoice/IssueInvalid', data)
 
-    if (@result["RtnCode"] == "1")
+    if (@result[:RtnCode] == "1")
       @einvoice.update!(status: 'issue_invalid')
     end
 
@@ -102,9 +103,9 @@ class EinvoicesController < ApplicationController
     data                   = encode_and_check_mac_value(data)
     send_request('Invoice/Allowance', data)
 
-    if (@result["RtnCode"] == "1")
+    if (@result[:RtnCode] == "1")
       obj = {status: "allowance"}
-      @result.except("RtnCode", "RtnMsg", "CheckMacValue").keys.each { |key| obj[key.downcase] = @result[key] }
+      @result.except(:RtnCode, :RtnMsg, :CheckMacValue).keys.each { |key| obj[key.downcase] = @result[key] }
       @einvoice.credit_notes.create!(obj)
       @einvoice.update!(status: 'allowance')
     end
@@ -181,8 +182,8 @@ class EinvoicesController < ApplicationController
     encode_data          = encode_and_check_mac_value(data)
     send_request('Invoice/DelayIssue', encode_data)
 
-    if (@result["RtnCode"] == "1")
-      obj = {"order_number" => @result["OrderNumber"], status: 'delay_issue'}
+    if (@result[:RtnCode] == "1")
+      obj = {"order_number" => @result[:OrderNumber], status: 'delay_issue'}
       data.each { |key, value| obj[key.to_s.underscore] = value }
       Einvoice.create(obj)
     end
@@ -200,7 +201,7 @@ class EinvoicesController < ApplicationController
     data = encode_and_check_mac_value(data)
     send_request('Invoice/TriggerIssue', data)
 
-    if (@result["RtnCode"] == "4000003")
+    if (@result[:RtnCode] == "4000003")
       @einvoice.update(status: "trigger_issue")
     end
 
