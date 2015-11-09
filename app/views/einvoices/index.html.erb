@@ -6,6 +6,7 @@
       <td>#</td>
       <td>InvoiceNumber</td>
       <td>RelateNumber</td>
+      <td>OrderNumber</td>
       <td>Status</td>
     </tr>
     </thead>
@@ -15,6 +16,7 @@
           <td><%= einvoice.id %></td>
           <td><%= einvoice.invoice_number %></td>
           <td><%= einvoice.relate_number %></td>
+          <td><%= einvoice.order_number %></td>
           <td><%= einvoice.status %></td>
           <td>
             <%= link_to("Show", einvoice_path(einvoice.id), class: "btn btn-sm btn-primary") %>
@@ -24,5 +26,6 @@
     </tbody>
   </table>
 
-  <%= link_to 'New Issue', new_einvoice_path, class: "btn btn-primary" %>
+  <%= link_to 'New Issue', new_einvoice_path, class: "btn btn-success" %>
+  <%= link_to 'Delay Issue', delay_einvoices_path, class: "btn btn-success" %>
 </div>

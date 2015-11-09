@@ -3,11 +3,12 @@ Rails.application.routes.draw do
   resources :einvoices do
     collection do
       post :issue
+      get 'delay'
+      post 'delay_issue'
     end
 
     member do
       post 'allowance'
-      get 'delay_issue'
       get 'issue_invalid'
       get 'query_issue'
       get 'query_issue_invalid'

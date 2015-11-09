@@ -1,5 +1,5 @@
 class EinvoicesController < ApplicationController
-  before_action :find_einvoice, except: [:index, :new, :issue]
+  before_action :find_einvoice, except: [:index, :new, :issue, :delay, :delay_issue]
 
 =begin
   PRE_ENCODE_COLUMN = [:CustomerName, :CustomerAddr , :CustomerEmail, :InvoiceRemark, :ItemName, :ItemWord, :InvCreateDate, :NotifyMail]
@@ -29,9 +29,14 @@ class EinvoicesController < ApplicationController
   def notify
   end
 
+  def delay
+    @einvoice = Einvoice.new
+  end
+
   def issue
+    time_now = Time.now()
     data = {
-      TimeStamp: Time.now().to_i,
+      TimeStamp: time_now.to_i,
       MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
       RelateNumber: SecureRandom.hex(15),
       Print: '0',
@@ -39,7 +44,7 @@ class EinvoicesController < ApplicationController
       TaxType: '1',
       SalesAmount: 300,
       InvType: '07',
-      InvCreateDate: Time.now().strftime("%Y-%m-%d %H:%M:%S")
+      InvCreateDate: time_now.strftime("%Y-%m-%d %H:%M:00")
     }
     data[:CustomerEmail] = params[:einvoice][:customer_email]
     data[:CustomerPhone] = params[:einvoice][:customer_phone]
@@ -152,27 +157,35 @@ class EinvoicesController < ApplicationController
   def delay_issue
     data = {
       TimeStamp: Time.now().to_i,
-      DelayFlag: 2,
       MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
-      RelateNumber: "fb8532344305c47c5302d5e0ec2d52",
-      CustomerEmail: 'frsnic@gmail.com',
+      RelateNumber: SecureRandom.hex(15),
       TaxType: '1',
       Donation: '2',
       Print: '0',
-      SalesAmount: 300,
-      ItemName: '名稱 1|名稱 2|名稱 3',
-      ItemCount: '1|2|3',
-      ItemWord: '單位 1|單位 2|單位 3',
-      ItemPrice: '44|55|66',
-      ItemAmount: '100|100|100',
-      DelayDay: '0',
       Tsr: SecureRandom.hex(15),
       PayType: '3',
       PayAct: 'ALLPAY',
       InvType: '07'
     }
-    data = encode_and_check_mac_value(data)
-    send_request('Invoice/DelayIssue', data)
+    data[:DelayFlag]     = params[:einvoice][:delay_flag]
+    data[:DelayDay]      = params[:einvoice][:delay_day]
+    data[:CustomerEmail] = params[:einvoice][:customer_email]
+    data[:CustomerPhone] = params[:einvoice][:customer_phone]
+    data[:ItemName]      = params[:einvoice][:item_name]
+    data[:ItemCount]     = params[:einvoice][:item_count]
+    data[:ItemWord]      = params[:einvoice][:item_word]
+    data[:ItemPrice]     = params[:einvoice][:item_price]
+    data[:ItemAmount]    = item_amount(data)
+    data[:SalesAmount]   = sales_amount(data)
+    data[:NotifyURL]     = params[:einvoice][:notify_url]
+    encode_data          = encode_and_check_mac_value(data)
+    send_request('Invoice/DelayIssue', encode_data)
+
+    if (@result["RtnCode"] == "1")
+      obj = {"order_number" => @result["OrderNumber"], status: 'delay_issue'}
+      data.each { |key, value| obj[key.to_s.underscore] = value }
+      Einvoice.create(obj)
+    end
 
     render "result"
   end
@@ -181,11 +194,15 @@ class EinvoicesController < ApplicationController
     data = {
       TimeStamp: Time.now().to_i,
       MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
-      Tsr: SecureRandom.hex(15),
+      Tsr: @einvoice.tsr,
       PayType: '3'
     }
-    data = generate_check_mac_value(data)
+    data = encode_and_check_mac_value(data)
     send_request('Invoice/TriggerIssue', data)
+
+    if (@result["RtnCode"] == "4000003")
+      @einvoice.update(status: "trigger_issue")
+    end
 
     render "result"
   end

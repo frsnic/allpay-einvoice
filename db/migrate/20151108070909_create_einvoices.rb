@@ -30,6 +30,14 @@ class CreateEinvoices < ActiveRecord::Migration
       t.text :vat
       t.text :invoice_number
       t.text :status
+      t.text :delay_flag
+      t.text :delay_day
+      t.text :ecbank_id
+      t.text :tsr
+      t.text :pay_type
+      t.text :pay_act
+      t.text :notify_url
+      t.text :order_number
 
       t.timestamps null: false
     end
