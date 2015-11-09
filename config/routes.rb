@@ -26,21 +26,6 @@ Rails.application.routes.draw do
     end
   end
 
-  scope :controller => "api" do
-    get 'index'
-    get 'issue'
-    get 'delay_issue'
-    get 'allowance'
-    get 'issue_invalid'
-    get 'allowance_invalid'
-    get 'query_issue'
-    get 'query_issue_invalid'
-    get 'query_allowance'
-    get 'query_allowance_invalid'
-    get 'invoice_notify'
-    get 'trigger_issue'
-  end
-
   root 'einvoices#index'
 
   # The priority is based upon order of creation: first created -> highest priority.
