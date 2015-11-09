@@ -43,7 +43,7 @@ class ApplicationController < ActionController::Base
 
     @data = data
     @result = obj
-    @error_msg = URI.decode(result.body).to_s.force_encoding("UTF-8") + '\n' + error_msg(obj["RtnCode"]).to_s
+    @error_msg = URI.decode(result.body).to_s.force_encoding("UTF-8") + '<br><br>' + error_msg(obj["RtnCode"]).to_s
   end
 
   def error_msg(code)
