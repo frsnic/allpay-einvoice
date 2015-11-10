@@ -2,9 +2,9 @@ class EinvoicesController < ApplicationController
   before_action :find_einvoice, except: [:index, :new, :issue, :delay, :delay_issue]
 
 =begin
-  PRE_ENCODE_COLUMN = [:CustomerName, :CustomerAddr , :CustomerEmail, :InvoiceRemark, :ItemName, :ItemWord, :InvCreateDate, :NotifyMail,
+  ENCODE_COLUMN = [:CustomerName, :CustomerAddr , :CustomerEmail, :InvoiceRemark, :ItemName, :ItemWord, :InvCreateDate, :NotifyMail,
                        :Reason, :IIS_Customer_Name, :IIS_Customer_Addr, :IIS_Customer_Email]
-  BLACK_LIST_COLUMN = [:ItemName, :ItemWord, :InvoiceRemark, :Reason]
+  BLACK_LIST_COLUMN = [:ItemName, :ItemWord, :InvoiceRemark, :Reason, :CheckMacValue]
   DEVELOP_ENVIRONMENT = {
       HOST: 'http://einvoice-stage.allpay.com.tw/',
       HashKey: 'ejCk326UnaZWKisg',
@@ -55,11 +55,13 @@ class EinvoicesController < ApplicationController
     data[:ItemPrice]     = params[:einvoice][:item_price]
     data[:ItemAmount]    = item_amount(data)
     data[:SalesAmount]   = sales_amount(data)
-    encode_data          = encode_and_check_mac_value(data)
-    send_request('Invoice/Issue', encode_data)
+    encode_data          = encode_column(data)
+    obj                  = data.merge( { CheckMacValue: check_mac_value(encode_data) } )
+
+    send_request('Invoice/Issue', obj)
 
     if (@result[:RtnCode] == "1")
-      obj = {"invoice_number" => @result["InvoiceNumber"], status: 'issue'}
+      obj = {"invoice_number" => @result[:InvoiceNumber], status: 'issue'}
       data.each { |key, value| obj[key.to_s.underscore] = value }
       Einvoice.create(obj)
     end
@@ -74,7 +76,8 @@ class EinvoicesController < ApplicationController
       InvoiceNumber: @einvoice.invoice_number,
       Reason: 'I hate test.'
     }
-    data = encode_and_check_mac_value(data)
+    encode_data = encode_column(data)
+    data.merge!( { CheckMacValue: check_mac_value(encode_data) } )
     send_request('Invoice/IssueInvalid', data)
 
     if (@result[:RtnCode] == "1")
@@ -100,7 +103,8 @@ class EinvoicesController < ApplicationController
     data[:ItemPrice]       = params[:einvoice][:item_price]
     data[:ItemAmount]      = item_amount(data)
     data[:AllowanceAmount] = sales_amount(data)
-    data                   = encode_and_check_mac_value(data)
+    encode_data = encode_column(data)
+    data.merge!( { CheckMacValue: check_mac_value(encode_data) } )
     send_request('Invoice/Allowance', data)
 
     if (@result[:RtnCode] == "1")
@@ -119,7 +123,8 @@ class EinvoicesController < ApplicationController
       MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
       RelateNumber: @einvoice.relate_number
     }
-    data = encode_and_check_mac_value(data)
+    encode_data = encode_column(data)
+    data.merge!( { CheckMacValue: check_mac_value(encode_data) } )
     send_request('Query/Issue', data)
 
     render "result"
@@ -131,7 +136,8 @@ class EinvoicesController < ApplicationController
       MerchantID: DEVELOP_ENVIRONMENT[:MerchantID],
       RelateNumber: @einvoice.relate_number
     }
-    data = encode_and_check_mac_value(data)
+    encode_data = encode_column(data)
+    data.merge!( { CheckMacValue: check_mac_value(encode_data) } )
     send_request('Query/IssueInvalid', data)
 
     render "result"

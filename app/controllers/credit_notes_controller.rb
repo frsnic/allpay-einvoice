@@ -17,7 +17,8 @@ class CreditNotesController < ApplicationController
       AllowanceNo: @credit_note.ia_allow_no,
       Reason: 'I hate test.'
     }
-    data = encode_and_check_mac_value(data)
+    encode_data = encode_column(data)
+    data.merge!( { CheckMacValue: check_mac_value(encode_data) } )
     send_request('Invoice/AllowanceInvalid', data)
 
     if (@result[:RtnCode] == "1")
@@ -37,7 +38,8 @@ class CreditNotesController < ApplicationController
       InvoiceNo: @credit_note.ia_invoice_no,
       AllowanceNo: @credit_note.ia_allow_no
     }
-    data = encode_and_check_mac_value(data)
+    encode_data = encode_column(data)
+    data.merge!( { CheckMacValue: check_mac_value(encode_data) } )
     send_request('Query/Allowance', data)
 
     render "einvoices/result"
@@ -50,7 +52,8 @@ class CreditNotesController < ApplicationController
       InvoiceNo: @credit_note.ia_invoice_no,
       AllowanceNo: @credit_note.ia_allow_no
     }
-    data = encode_and_check_mac_value(data)
+    encode_data = encode_column(data)
+    data.merge!( { CheckMacValue: check_mac_value(encode_data) } )
     send_request('Query/AllowanceInvalid', data)
 
     render "einvoices/result"

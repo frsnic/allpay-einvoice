@@ -39,7 +39,7 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
-  PRE_ENCODE_COLUMN = [:CustomerName, :CustomerAddr , :CustomerEmail, :InvoiceRemark, :ItemName, :ItemWord, :InvCreateDate, :NotifyMail,
+  ENCODE_COLUMN = [:CustomerName, :CustomerAddr , :CustomerEmail, :InvoiceRemark, :ItemName, :ItemWord, :InvCreateDate, :NotifyMail,
                        :Reason, :IIS_Customer_Name, :IIS_Customer_Addr, :IIS_Customer_Email]
   BLACK_LIST_COLUMN = [:ItemName, :ItemWord, :InvoiceRemark, :Reason, :CheckMacValue]
   DEVELOP_ENVIRONMENT = {
