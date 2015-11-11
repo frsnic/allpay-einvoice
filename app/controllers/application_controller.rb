@@ -35,7 +35,7 @@ class ApplicationController < ActionController::Base
   end
 
   def send_request(url, data)
-    uri = URI(DEVELOP_ENVIRONMENT[:HOST] << url)
+    uri = URI(DEVELOP_ENVIRONMENT[:HOST] + url)
     result = Net::HTTP.post_form(uri, data)
     logger.info "== #{result.body} =="
 
