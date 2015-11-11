@@ -28,9 +28,7 @@
     <% if @einvoice.status == 'issue' || @einvoice.status == 'allowance' %>
       <%= link_to("Allowance", edit_einvoice_path(@einvoice.id), class: "btn btn-warning" ) %>
     <% end %>
-    <% if @einvoice.status == 'issue' || @einvoice.status == 'allowance'|| @einvoice.status == 'allowance_invalid' %>
-      <%= link_to("Allowance List", einvoice_credit_notes_path(@einvoice.id), class: "btn btn-primary" ) %>
-    <% end %>
+    <%= link_to("Allowance List", einvoice_credit_notes_path(@einvoice.id), class: "btn btn-primary" ) %>
   </p>
   <p>
     <% if @einvoice.status != 'delay_issue' && @einvoice.status != 'trigger_issue' %>

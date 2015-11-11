@@ -15,10 +15,7 @@ class ApplicationController < ActionController::Base
     str = (data.keys - BLACK_LIST_COLUMN).sort.inject('') { |str, key| str << "#{key}=#{data[key]}&" }
     logger.info "== str #{str} =="
     str = "HashKey=#{DEVELOP_ENVIRONMENT[:HashKey]}&#{str}HashIV=#{DEVELOP_ENVIRONMENT[:HashIV]}"
-    str = str.gsub("%21","!")
-             .gsub("%2A","*")
-             .gsub("%28","(")
-             .gsub("%29",")")
+    str = str.gsub("%21","!").gsub("%2A","*").gsub("%28","(").gsub("%29",")")
     Digest::MD5.hexdigest(CGI::escape(str).downcase).upcase
   end
 
@@ -42,7 +39,8 @@ class ApplicationController < ActionController::Base
     obj = {}
     result.body.split('&').each do |item|
       key, value = item.split('=')
-      obj[key.to_sym] = value
+      key = key.to_sym
+      obj[key] = value
     end
 
     if !vertify_mac(obj)
