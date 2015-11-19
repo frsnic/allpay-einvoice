@@ -155,9 +155,10 @@ class EinvoicesController < ApplicationController
     data[:Notify]      = notify_type(params[:form][:notify_mail], params[:form][:phone])
     data[:InvoiceTag]  = params[:form][:invoice_tag]
     data[:Notified]    = params[:form][:notified]
-    data               = encode_and_check_mac_value(data)
+    encode_data        = encode_column(data)
+    data               = data.merge( { CheckMacValue: check_mac_value(encode_data) } )
     send_request('Notify/InvoiceNotify', data)
-
+    
     render "result"
   end
 
@@ -185,8 +186,10 @@ class EinvoicesController < ApplicationController
     data[:ItemAmount]    = item_amount(data)
     data[:SalesAmount]   = sales_amount(data)
     data[:NotifyURL]     = params[:einvoice][:notify_url]
-    encode_data          = encode_and_check_mac_value(data)
+    encode_data          = encode_column(data)
+    encode_data          = data.merge( { CheckMacValue: check_mac_value(encode_data) } )
     send_request('Invoice/DelayIssue', encode_data)
+
 
     if (@result[:RtnCode] == "1")
       obj = {"order_number" => @result[:OrderNumber], status: 'delay_issue'}
@@ -204,7 +207,8 @@ class EinvoicesController < ApplicationController
       Tsr: @einvoice.tsr,
       PayType: '3'
     }
-    data = encode_and_check_mac_value(data)
+    data = encode_column(data)
+    data = data.merge( { CheckMacValue: check_mac_value(data) } )
     send_request('Invoice/TriggerIssue', data)
 
     if (@result[:RtnCode] == "4000003")

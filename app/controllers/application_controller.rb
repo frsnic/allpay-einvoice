@@ -12,11 +12,12 @@ class ApplicationController < ActionController::Base
   end
 
   def check_mac_value(data)
-    str = (data.keys - BLACK_LIST_COLUMN).sort.inject('') { |str, key| str << "#{key}=#{data[key]}&" }
-    logger.info "== str #{str} =="
+    obj = {}
+    data.each_pair { |key, value| obj[key.downcase] = value }
+    str = (obj.keys - BLACK_LIST_COLUMN.map(&:downcase)).sort.inject('') { |str, key| str << "#{key}=#{obj[key]}&" }
     str = "HashKey=#{DEVELOP_ENVIRONMENT[:HashKey]}&#{str}HashIV=#{DEVELOP_ENVIRONMENT[:HashIV]}"
-    str = str.gsub("%21","!").gsub("%2A","*").gsub("%28","(").gsub("%29",")")
-    Digest::MD5.hexdigest(CGI::escape(str).downcase).upcase
+    str = CGI::escape(str).gsub("%21","!").gsub("%2A","*").gsub("%28","(").gsub("%29",")")
+    Digest::MD5.hexdigest(str.downcase).upcase
   end
 
   def notify_type(email, phone)

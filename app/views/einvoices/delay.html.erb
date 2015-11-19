@@ -2,7 +2,7 @@
   <h1>Delay Issue</h1>
   <%= simple_form_for @einvoice, url: delay_issue_einvoices_path, method: "post" do |f| %>
     <div class="form-einvoice">
-      <%= f.input :delay_flag,          input_html: { class: "form-control" }, collection: [['延遲', '1'], ['觸發', '2']] %>
+      <%= f.input :delay_flag,          input_html: { class: "form-control" }, collection: [['延遲', '1'], ['觸發', '2']], selected: '1' %>
       <%= f.input :relate_number,       input_html: { class: "form-control" } %>
       <%= f.input :customer_id,         input_html: { class: "form-control" } %>
       <%= f.input :customer_identifier, input_html: { class: "form-control" } %>
@@ -14,7 +14,7 @@
       <%= f.input :item_count,          input_html: { class: "form-control", value: "1|2|3" } %>
       <%= f.input :item_word,           input_html: { class: "form-control", value: "單位 1|單位 2|單位 3" } %>
       <%= f.input :item_price,          input_html: { class: "form-control", value: "44|55|66" } %>
-      <%= f.input :delay_day,           input_html: { class: "form-control" } %>
+      <%= f.input :delay_day,           input_html: { class: "form-control", value: "5" } %>
       <%= f.input :notify_url,          input_html: { class: "form-control" } %>
     </div>
     <br>
