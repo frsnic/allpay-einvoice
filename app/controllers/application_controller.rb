@@ -5,9 +5,13 @@ class ApplicationController < ActionController::Base
 
   private
 
+  def url_encode(str)
+    CGI::escape(str).gsub("%21","!").gsub("%2A","*").gsub("%28","(").gsub("%29",")")
+  end
+
   def encode_column(origin_data)
     data = origin_data.clone
-    data.keys.each { |key| data[key] = ENCODE_COLUMN.include?(key) ? CGI::escape(data[key].to_s) : data[key] }
+    data.keys.each { |key| data[key] = ENCODE_COLUMN.include?(key) ? url_encode(data[key]) : data[key] }
     data
   end
 
@@ -16,8 +20,7 @@ class ApplicationController < ActionController::Base
     data.each_pair { |key, value| obj[key.downcase] = value }
     str = (obj.keys - BLACK_LIST_COLUMN.map(&:downcase)).sort.inject('') { |str, key| str << "#{key}=#{obj[key]}&" }
     str = "HashKey=#{DEVELOP_ENVIRONMENT[:HashKey]}&#{str}HashIV=#{DEVELOP_ENVIRONMENT[:HashIV]}"
-    str = CGI::escape(str).gsub("%21","!").gsub("%2A","*").gsub("%28","(").gsub("%29",")")
-    Digest::MD5.hexdigest(str.downcase).upcase
+    Digest::MD5.hexdigest(url_encode(str).downcase).upcase
   end
 
   def notify_type(email, phone)
